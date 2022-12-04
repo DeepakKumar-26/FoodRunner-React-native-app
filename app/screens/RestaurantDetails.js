@@ -1,16 +1,42 @@
-import {StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
+import axios from 'axios';
+import {StyleSheet, Text, View} from 'react-native';
+
 import TextLarge from '../components/TextLarge';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RestaurantMenuItem from '../components/RestaurantMenuItem';
 import AppButton from '../components/AppButton';
+import {FlatList} from 'react-native-gesture-handler';
+import ItemSeperatorComponent from '../components/ItemSeperatorComponent';
+import ItemSeperatorRestaurantDetails from '../components/ItemSeperatorRestaurantDetails';
 
-export default function RestaurantDetails({navigation}) {
+export default function RestaurantDetails({route, navigation}) {
   const [fav, setFav] = useState(false);
+  const [apiData, setApiData] = useState({});
+  const itemAdded=[];
+  const {id} = route.params.item;
+  // // ......................
+  var config = {
+    method: 'get',
+    url: `http://13.235.250.119/v2/restaurants/fetch_result/${id}`,
+    headers: {
+      token: 'cb907b4856fdfe',
+    },
+  };
+
+  axios(config)
+    .then(function (response) {
+      setApiData(response.data.data);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 
   const addToFav = () => {
     setFav(!fav);
   };
+
+
   return (
     <View style={styles.container}>
       <View style={styles.containerHeading}>
@@ -22,15 +48,23 @@ export default function RestaurantDetails({navigation}) {
           color="crimson"
         />
       </View>
-      <View style={{flex:1,}}>
-        <RestaurantMenuItem />
-        <RestaurantMenuItem />
-        <RestaurantMenuItem />
+      <View style={{flex: 1}}>
+        <FlatList
+          data={apiData.data}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => <RestaurantMenuItem item={item}/>}
+          ItemSeparatorComponent={ItemSeperatorRestaurantDetails}
+        />
       </View>
 
-      <View style={{padding: 10,}}>
-        <AppButton title="Proceed to Cart" onPress={()=>navigation.navigate("My Cart")} />
-      </View>
+      {itemAdded && (
+        <View style={{padding: 5}}>
+          <AppButton
+            title="Proceed to Cart"
+            onPress={() => navigation.navigate('My Cart')}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -38,7 +72,7 @@ export default function RestaurantDetails({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'#E3FCBF'
+    backgroundColor: '#E3FCBF',
   },
   containerHeading: {
     padding: 10,
@@ -46,8 +80,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderTopWidth: 2,
-    borderBottomWidth:.5,
-borderTopColor:'white',
-// borderBottomColor:'white',
+    borderBottomWidth: 0.5,
+    borderTopColor: 'white',
+    // borderBottomColor:'white',
   },
 });

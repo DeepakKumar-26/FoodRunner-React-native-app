@@ -16,7 +16,7 @@ export default function AddButton() {
 
   }
   return (
-    <TouchableOpacity onPress={handleAddToCart} style={[styles.button,{backgroundColor:(!addToCart)?'#E1FFB1':'#EC7272'}]}>
+    <TouchableOpacity onPress={handleAddToCart} style={[styles.button,{backgroundColor:(!addToCart)?'#B1B2FF':'#EC7272'}]}>
       <TextLarge>{(!addToCart)?'Add':'Remove'}</TextLarge>
     </TouchableOpacity>
   );

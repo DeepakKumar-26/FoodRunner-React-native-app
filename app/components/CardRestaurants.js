@@ -4,7 +4,7 @@ import TextMedium from './TextMedium';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import TextLarge from './TextLarge';
 
-export default function CardRestaurants({onPress}) {
+export default function CardRestaurants({item, onPress}) {
   const [isLiked, setIsLiked] = useState(false);
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -12,13 +12,13 @@ export default function CardRestaurants({onPress}) {
         <Image
           style={styles.image}
           source={{
-            uri: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+            uri: item.image_url,
           }}
         />
       </View>
       <View style={styles.containerDetails}>
-        <TextLarge>Pind Tadka</TextLarge>
-        <TextMedium>Rs. 280 / Person</TextMedium>
+        <TextLarge>{item.name}</TextLarge>
+        <TextMedium>Rs {item.cost_for_one}/ Person</TextMedium>
       </View>
       <View>
         <Icon
@@ -27,7 +27,7 @@ export default function CardRestaurants({onPress}) {
           color="red"
           size={25}
         />
-        <TextLarge color="#FA7D09">4.1</TextLarge>
+        <TextLarge color="#FA7D09">{item.rating}</TextLarge>
       </View>
     </TouchableOpacity>
   );
@@ -39,8 +39,6 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: 'white',
     borderRadius: 5,
-    elevation:7,
-    shadowColor: 'darkgreen',
     alignItems: 'center',
   },
   containerDetails: {
