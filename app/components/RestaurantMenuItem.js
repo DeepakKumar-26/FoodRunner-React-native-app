@@ -7,10 +7,15 @@ import AddButton from './AddButton';
 
 export default function RestaurantMenuItem({item,}) {
   const [addToCart, setAddToCart] = useState(false);
+  const [cartItems,setCartItems]=useState([])
 
   const handleAddToCart = () => {
+    cartItems.push(item)
     setAddToCart(!addToCart);
+    console.log("Pta nhi console  wali chize console pr show kyu nii ho rha hai")
+
   };
+
   return (
     <View style={styles.container}>
       <View>
