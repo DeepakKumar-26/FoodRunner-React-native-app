@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import axios from 'axios';
 import {StyleSheet, Text, View} from 'react-native';
 
@@ -9,16 +9,19 @@ import AppButton from '../components/AppButton';
 import {FlatList} from 'react-native-gesture-handler';
 import ItemSeperatorComponent from '../components/ItemSeperatorComponent';
 import ItemSeperatorRestaurantDetails from '../components/ItemSeperatorRestaurantDetails';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addToFav } from '../utils/functions';
 
 export default function RestaurantDetails({route, navigation}) {
-  const [fav, setFav] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const [apiData, setApiData] = useState({});
   const itemAdded=[];
-  const {id} = route.params.item;
+  const resItem = route.params.item;
   // // ......................
   var config = {
     method: 'get',
-    url: `http://13.235.250.119/v2/restaurants/fetch_result/${id}`,
+    url: `http://13.235.250.119/v2/restaurants/fetch_result/${resItem.id}`,
     headers: {
       token: 'cb907b4856fdfe',
     },
@@ -32,18 +35,32 @@ export default function RestaurantDetails({route, navigation}) {
       console.log(error);
     });
 
-  const addToFav = () => {
-    setFav(!fav);
-  };
-
+    const handleAddToFav = async item => {
+      setIsLiked(!isLiked);
+      await addToFav(item);
+    };
+  
+    useFocusEffect(
+      useCallback(() => {
+        AsyncStorage.getItem('FavouriteRestorants').then(response => {
+          const jsonValue = JSON.parse(response);
+          if (jsonValue.some(i => i.id ===resItem.id)) {
+            setIsLiked(true);
+          } else {
+            setIsLiked(false);
+          }
+        });
+      }, []),
+    );
+  
 
   return (
     <View style={styles.container}>
       <View style={styles.containerHeading}>
         <TextLarge>Choose from menu listed below</TextLarge>
         <Icon
-          onPress={addToFav}
-          name={fav ? 'heart' : 'heart-outline'}
+          onPress={()=>handleAddToFav(resItem)}
+          name={isLiked ? 'heart' : 'heart-outline'}
           size={25}
           color="crimson"
         />
