@@ -9,16 +9,16 @@ import AppButton from '../components/AppButton';
 import {FlatList} from 'react-native-gesture-handler';
 import ItemSeperatorComponent from '../components/ItemSeperatorComponent';
 import ItemSeperatorRestaurantDetails from '../components/ItemSeperatorRestaurantDetails';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addToFav } from '../utils/functions';
+import {addToFav} from '../utils/functions';
 
 export default function RestaurantDetails({route, navigation}) {
   const [isLiked, setIsLiked] = useState(false);
   const [apiData, setApiData] = useState({});
-  const itemAdded=[];
+  const [isCartButtonVisible, setIsCartButtonVisible] = useState(false);
   const resItem = route.params.item;
-  // // ......................
+
   var config = {
     method: 'get',
     url: `http://13.235.250.119/v2/restaurants/fetch_result/${resItem.id}`,
@@ -35,31 +35,30 @@ export default function RestaurantDetails({route, navigation}) {
       console.log(error);
     });
 
-    const handleAddToFav = async item => {
-      setIsLiked(!isLiked);
-      await addToFav(item);
-    };
-  
-    useFocusEffect(
-      useCallback(() => {
-        AsyncStorage.getItem('FavouriteRestorants').then(response => {
-          const jsonValue = JSON.parse(response);
-          if (jsonValue.some(i => i.id ===resItem.id)) {
-            setIsLiked(true);
-          } else {
-            setIsLiked(false);
-          }
-        });
-      }, []),
-    );
-  
+  const handleAddToFav = async item => {
+    setIsLiked(!isLiked);
+    await addToFav(item);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      AsyncStorage.getItem('FavouriteRestorants').then(response => {
+        const jsonValue = JSON.parse(response);
+        if (jsonValue?.some(i => i.id === resItem.id)) {
+          setIsLiked(true);
+        } else {
+          setIsLiked(false);
+        }
+      });
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.containerHeading}>
         <TextLarge>Choose from menu listed below</TextLarge>
         <Icon
-          onPress={()=>handleAddToFav(resItem)}
+          onPress={() => handleAddToFav(resItem)}
           name={isLiked ? 'heart' : 'heart-outline'}
           size={25}
           color="crimson"
@@ -69,19 +68,17 @@ export default function RestaurantDetails({route, navigation}) {
         <FlatList
           data={apiData.data}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => <RestaurantMenuItem item={item}/>}
+          renderItem={({item}) => <RestaurantMenuItem item={item} />}
           ItemSeparatorComponent={ItemSeperatorRestaurantDetails}
         />
       </View>
 
-      {itemAdded && (
-        <View style={{padding: 5}}>
-          <AppButton
-            title="Proceed to Cart"
-            onPress={() => navigation.navigate('My Cart')}
-          />
-        </View>
-      )}
+      <View style={{padding: 5}}>
+        <AppButton
+          title="Proceed to Cart"
+          onPress={() => navigation.navigate('My Cart',{resItem})}
+        />
+      </View>
     </View>
   );
 }
