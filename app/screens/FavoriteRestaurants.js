@@ -3,6 +3,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import CardRestaurants from '../components/CardRestaurants';
+import ItemSeperatorComponent from '../components/ItemSeperatorComponent';
 import Screen from '../components/Screen';
 
 export default function FavoriteRestaurants({navigation}) {
@@ -26,10 +27,11 @@ export default function FavoriteRestaurants({navigation}) {
   return (
     <Screen>
       <View style={styles.container}>
-        { (favRestaurants !== null && favRestaurants?.length > 0) ? (
+        {favRestaurants !== null && favRestaurants?.length > 0 ? (
           <FlatList
             data={favRestaurants}
             keyExtractor={item => item.id.toString()}
+            ItemSeparatorComponent={ItemSeperatorComponent}
             renderItem={({item}) => (
               <CardRestaurants
                 item={item}
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 40,
     width: '50%',
-    elevation:5,
+    elevation: 5,
     alignSelf: 'center',
     justifyContent: 'center',
   },

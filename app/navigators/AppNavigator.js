@@ -26,7 +26,11 @@ export default AppNavigator = () => {
         <Stack.Screen
           name="Restaurant Details"
           component={RestaurantDetails}
-          options={options}
+          options={({route}) => ({
+            title: route.params.item.name,
+            headerBackground: NavHeader,
+            headerShadowVisible: true,
+          })}
         />
         <Stack.Screen name="My Cart" component={Cart} options={options} />
         <Stack.Screen
